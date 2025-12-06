@@ -1,1 +1,36 @@
 @import "tailwindcss";
+
+@theme {
+  --color-gaming-50: #f5f3ff;
+  --color-gaming-100: #ede9fe;
+  --color-gaming-200: #ddd6fe;
+  --color-gaming-300: #c4b5fd;
+  --color-gaming-400: #a78bfa;
+  --color-gaming-500: #8b5cf6;
+  --color-gaming-600: #7c3aed;
+  --color-gaming-700: #6d28d9;
+  --color-gaming-800: #5b21b6;
+  --color-gaming-900: #4c1d95;
+}
+
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Custom scrollbar for a techy feel */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}

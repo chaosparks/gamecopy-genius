@@ -69,6 +69,11 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --color-gaming-300: #c4b5fd;
+    --color-gaming-400: #a78bfa;
+    --color-gaming-500: #8b5cf6;
+    --color-gaming-600: #7c3aed;
+    --color-gaming-900: #4c1d95;
   }
 }
 @layer base {
@@ -442,6 +447,12 @@
   .border-blue-500 {
     border-color: var(--color-blue-500);
   }
+  .border-gaming-500\/30 {
+    border-color: color-mix(in srgb, #8b5cf6 30%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      border-color: color-mix(in oklab, var(--color-gaming-500) 30%, transparent);
+    }
+  }
   .border-green-500 {
     border-color: var(--color-green-500);
   }
@@ -471,6 +482,9 @@
     @supports (color: color-mix(in lab, red, red)) {
       background-color: color-mix(in oklab, var(--color-blue-600) 20%, transparent);
     }
+  }
+  .bg-gaming-600 {
+    background-color: var(--color-gaming-600);
   }
   .bg-green-400 {
     background-color: var(--color-green-400);
@@ -517,6 +531,13 @@
   }
   .from-blue-600 {
     --tw-gradient-from: var(--color-blue-600);
+    --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+  }
+  .from-gaming-900\/50 {
+    --tw-gradient-from: color-mix(in srgb, #4c1d95 50%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-gradient-from: color-mix(in oklab, var(--color-gaming-900) 50%, transparent);
+    }
     --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
   }
   .from-green-600 {
@@ -664,6 +685,15 @@
   .text-blue-400 {
     color: var(--color-blue-400);
   }
+  .text-gaming-300 {
+    color: var(--color-gaming-300);
+  }
+  .text-gaming-400 {
+    color: var(--color-gaming-400);
+  }
+  .text-gaming-500 {
+    color: var(--color-gaming-500);
+  }
   .text-gray-300 {
     color: var(--color-gray-300);
   }
@@ -738,6 +768,12 @@
       --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-blue-900) 20%, transparent) var(--tw-shadow-alpha), transparent);
     }
   }
+  .shadow-gaming-900\/20 {
+    --tw-shadow-color: color-mix(in srgb, #4c1d95 20%, transparent);
+    @supports (color: color-mix(in lab, red, red)) {
+      --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-gaming-900) 20%, transparent) var(--tw-shadow-alpha), transparent);
+    }
+  }
   .shadow-green-900\/20 {
     --tw-shadow-color: color-mix(in srgb, oklch(39.3% 0.095 152.535) 20%, transparent);
     @supports (color: color-mix(in lab, red, red)) {
@@ -779,12 +815,27 @@
     --tw-outline-style: none;
     outline-style: none;
   }
+  .selection\:bg-gaming-500 {
+    & *::selection {
+      background-color: var(--color-gaming-500);
+    }
+    &::selection {
+      background-color: var(--color-gaming-500);
+    }
+  }
   .selection\:text-white {
     & *::selection {
       color: var(--color-white);
     }
     &::selection {
       color: var(--color-white);
+    }
+  }
+  .hover\:bg-gaming-500 {
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-gaming-500);
+      }
     }
   }
   .hover\:bg-slate-700 {
@@ -826,6 +877,13 @@
       }
     }
   }
+  .hover\:text-gaming-300 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-gaming-300);
+      }
+    }
+  }
   .hover\:text-red-400 {
     &:hover {
       @media (hover: hover) {
@@ -860,6 +918,11 @@
   .focus\:ring-blue-500 {
     &:focus {
       --tw-ring-color: var(--color-blue-500);
+    }
+  }
+  .focus\:ring-gaming-500 {
+    &:focus {
+      --tw-ring-color: var(--color-gaming-500);
     }
   }
   .focus\:ring-green-500 {
@@ -915,6 +978,25 @@
       padding-inline: calc(var(--spacing) * 8);
     }
   }
+}
+body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
 }
 @property --tw-rotate-x {
   syntax: "*";
