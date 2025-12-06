@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   Gamepad2, 
@@ -14,7 +15,8 @@ import {
   Settings,
   X,
   Save,
-  Key
+  Key,
+  Check
 } from 'lucide-react';
 import { type FormState, Tone, Platform, Framework, Language, AiProvider } from './types';
 import { GENRE_OPTIONS, TONE_OPTIONS, PLATFORM_OPTIONS, FRAMEWORK_OPTIONS, LANGUAGE_OPTIONS, PLATFORM_FRAMEWORK_PRIORITY } from './constants';
@@ -52,6 +54,7 @@ const App: React.FC = () => {
   const [aiOutput, setAiOutput] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPromptCopied, setIsPromptCopied] = useState(false);
 
   // Derived state for sorting frameworks based on current platform
   const sortedFrameworkOptions = PLATFORM_FRAMEWORK_PRIORITY[formData.platform] || FRAMEWORK_OPTIONS;
@@ -152,6 +155,12 @@ const App: React.FC = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(generatedPrompt);
+    setIsPromptCopied(true);
+    setTimeout(() => setIsPromptCopied(false), 2000);
   };
 
   return (
@@ -455,10 +464,15 @@ const App: React.FC = () => {
                 <h3 className="text-sm font-semibold text-white">Generated System Prompt</h3>
               </div>
               <button 
-                onClick={() => copyToClipboard(generatedPrompt)}
-                className="text-xs flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors border border-slate-600"
+                onClick={handleCopyPrompt}
+                className={`text-xs flex items-center gap-1 px-2 py-1 rounded transition-colors border ${
+                  isPromptCopied 
+                  ? 'bg-green-500/20 text-green-400 border-green-500/50' 
+                  : 'bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-600'
+                }`}
               >
-                <Copy size={12} /> Copy
+                {isPromptCopied ? <Check size={12} /> : <Copy size={12} />} 
+                {isPromptCopied ? 'Copied!' : 'Copy'}
               </button>
             </div>
             <div className="bg-slate-950 p-5 min-h-[300px] max-h-[800px] overflow-y-auto custom-scrollbar">
