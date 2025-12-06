@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   Gamepad2, 
@@ -223,7 +222,7 @@ const App: React.FC = () => {
 
       {/* Header */}
       <header className="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="bg-gaming-600 p-2 rounded-lg">
               <Gamepad2 className="text-white" size={24} />
@@ -247,266 +246,259 @@ const App: React.FC = () => {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
-          {/* LEFT COLUMN: Controls */}
-          <div className="lg:col-span-5 space-y-6">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+        
+        {/* SECTION 1: Strategy & Format (Top Priority) */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-6">
+          <h2 className="text-xl font-semibold text-white flex items-center gap-2 border-b border-slate-800 pb-4">
+            <Share2 size={20} className="text-gaming-500" />
+            1. Strategy & Format
+          </h2>
+
+          <div className="space-y-6">
+            <SelectInput 
+              label="Copywriting Framework" 
+              options={sortedFrameworkOptions}
+              icon={BrainCircuit}
+              value={formData.framework}
+              onChange={(e) => handleInputChange('framework', e.target.value)}
+            />
             
-            {/* Main Form */}
-            <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-5">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-                <Target size={18} className="text-gaming-500" />
-                Core Details
-              </h2>
-              
-              <TextInput 
-                label="Game Name" 
-                value={formData.gameName} 
-                onChange={(e) => handleInputChange('gameName', e.target.value)} 
-                placeholder="e.g. Cyber Blades 2077"
-              />
-              
-              <div className="grid grid-cols-2 gap-4">
-                <SelectInput 
-                  label="Genre" 
-                  options={GENRE_OPTIONS}
-                  value={formData.genre}
-                  onChange={(e) => handleInputChange('genre', e.target.value)}
-                />
-                <SelectInput 
-                  label="Tone" 
-                  options={TONE_OPTIONS}
-                  icon={MessageSquare}
-                  value={formData.tone}
-                  onChange={(e) => handleInputChange('tone', e.target.value)}
-                />
-              </div>
-
-              {/* Moved Keywords Here */}
-              <div className="pb-2">
-                <TextArea
-                  label="Keywords / SEO (Optional)" 
-                  value={formData.keywords || ''}
-                  onChange={(e) => handleInputChange('keywords', e.target.value)}
-                  placeholder="Enter keywords to include (one per line)..."
-                />
-                <p className="text-xs text-slate-500 mt-1">These keywords will be included with natural density in the copy.</p>
-              </div>
-
-              <TextArea 
-                label="Raw Game Description / Fact Sheet"
-                value={formData.rawDescription || ''}
-                onChange={(e) => handleInputChange('rawDescription', e.target.value)}
-                placeholder="Paste game mechanics, patch notes, or rough ideas here. The AI will extract facts from this text."
-                className="h-32 font-mono text-sm"
-              />
-
-               <TextInput 
-                label="Competitor References (Vibe)" 
-                value={formData.competitorReferences || ''} 
-                onChange={(e) => handleInputChange('competitorReferences', e.target.value)} 
-                placeholder="e.g. Stardew Valley meets Dark Souls"
-              />
-
-              <div className="pt-2">
-                <label className="text-sm font-semibold text-gray-300 flex items-center gap-2 mb-2">
-                  <StarIcon /> Key Selling Points (USPs)
-                </label>
-                <div className="space-y-2">
-                  {formData.usps.map((usp, idx) => (
-                    <div key={idx} className="flex gap-2">
-                      <input
-                        className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:ring-1 focus:ring-gaming-500 outline-none"
-                        value={usp}
-                        onChange={(e) => handleUspChange(idx, e.target.value)}
-                        placeholder={`Feature #${idx + 1}`}
-                      />
-                      <button 
-                        onClick={() => removeUsp(idx)}
-                        className="text-slate-500 hover:text-red-400 p-2"
-                        disabled={formData.usps.length === 1}
-                      >
-                        &times;
-                      </button>
-                    </div>
-                  ))}
-                  <button 
-                    onClick={addUsp}
-                    className="text-xs text-gaming-400 hover:text-gaming-300 font-medium pl-1"
-                  >
-                    + Add another feature
-                  </button>
-                </div>
-              </div>
-            </div>
-
-             <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-5">
-              <h2 className="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-                <Share2 size={18} className="text-gaming-500" />
-                Strategy & Format
-              </h2>
-
-              <div className="grid grid-cols-2 gap-4">
-                <SelectInput 
-                  label="Platform / Output" 
-                  options={PLATFORM_OPTIONS}
-                  value={formData.platform}
-                  onChange={(e) => handleInputChange('platform', e.target.value)}
-                />
-                <SelectInput 
-                  label="Target Language" 
-                  options={LANGUAGE_OPTIONS}
-                  icon={Globe}
-                  value={formData.language}
-                  onChange={(e) => handleInputChange('language', e.target.value)}
-                />
-              </div>
-
-              <SelectInput 
-                  label="Copywriting Framework (Sorted by Suitability)" 
-                  options={sortedFrameworkOptions}
-                  icon={BrainCircuit}
-                  value={formData.framework}
-                  onChange={(e) => handleInputChange('framework', e.target.value)}
-                />
-
-              <div className="pt-2">
-                <div className="flex justify-between items-center mb-1.5">
-                  <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
-                    Custom Instructions (Optional)
-                  </label>
-                  <span className={`text-xs ${
-                    (formData.customPrompt?.length || 0) > 1000 ? 'text-red-400' : 'text-slate-500'
-                  }`}>
-                    {formData.customPrompt?.length || 0}/1024
-                  </span>
-                </div>
-                <textarea
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-gaming-500 focus:border-transparent outline-none transition-all placeholder-slate-500 min-h-[80px]"
-                  value={formData.customPrompt || ''}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 1024) {
-                      handleInputChange('customPrompt', e.target.value);
-                    }
-                  }}
-                  placeholder="Add specific rules, banned words, or extra context..."
-                  maxLength={1024}
-                />
-              </div>
-
-            </div>
+            <SelectInput 
+              label="Platform / Output" 
+              options={PLATFORM_OPTIONS}
+              value={formData.platform}
+              onChange={(e) => handleInputChange('platform', e.target.value)}
+            />
           </div>
 
-          {/* RIGHT COLUMN: Output */}
-          <div className="lg:col-span-7 space-y-6">
-            
-            {/* Generated Prompt Display */}
-            <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden flex flex-col h-[500px] lg:h-auto shadow-xl">
-              <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
-                <div className="flex items-center gap-2">
-                  <Wand2 size={16} className="text-purple-400" />
-                  <h3 className="text-sm font-semibold text-white">Generated System Prompt</h3>
-                </div>
-                <button 
-                  onClick={() => copyToClipboard(generatedPrompt)}
-                  className="text-xs flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors border border-slate-600"
-                >
-                  <Copy size={12} /> Copy
-                </button>
-              </div>
-              <div className="flex-1 bg-slate-950 p-4 overflow-y-auto">
-                <pre className="whitespace-pre-wrap font-mono text-sm text-slate-400 leading-relaxed">
-                  {generatedPrompt}
-                </pre>
-              </div>
+          <div className="pt-2">
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-sm font-semibold text-gray-300 flex items-center gap-2">
+                Custom Instructions (Optional)
+              </label>
+              <span className={`text-xs ${
+                (formData.customPrompt?.length || 0) > 1000 ? 'text-red-400' : 'text-slate-500'
+              }`}>
+                {formData.customPrompt?.length || 0}/1024
+              </span>
             </div>
+            <textarea
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-gaming-500 focus:border-transparent outline-none transition-all placeholder-slate-500 min-h-[80px]"
+              value={formData.customPrompt || ''}
+              onChange={(e) => {
+                if (e.target.value.length <= 1024) {
+                  handleInputChange('customPrompt', e.target.value);
+                }
+              }}
+              placeholder="Add specific rules, banned words, or extra context..."
+              maxLength={1024}
+            />
+          </div>
+        </div>
 
-            {/* Action Bar */}
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-400">AI Model Provider</label>
-                <div className="flex gap-2">
+        {/* SECTION 2: Core Details */}
+        <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm space-y-6">
+          <h2 className="text-lg font-semibold text-white flex items-center gap-2 border-b border-slate-800 pb-4">
+            <Target size={20} className="text-gaming-500" />
+            2. Core Details
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <TextInput 
+              label="Game Name" 
+              value={formData.gameName} 
+              onChange={(e) => handleInputChange('gameName', e.target.value)} 
+              placeholder="e.g. Cyber Blades 2077"
+            />
+            <SelectInput 
+              label="Target Language" 
+              options={LANGUAGE_OPTIONS}
+              icon={Globe}
+              value={formData.language}
+              onChange={(e) => handleInputChange('language', e.target.value)}
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SelectInput 
+              label="Genre" 
+              options={GENRE_OPTIONS}
+              value={formData.genre}
+              onChange={(e) => handleInputChange('genre', e.target.value)}
+            />
+            <SelectInput 
+              label="Tone" 
+              options={TONE_OPTIONS}
+              icon={MessageSquare}
+              value={formData.tone}
+              onChange={(e) => handleInputChange('tone', e.target.value)}
+            />
+          </div>
+
+          <div className="pb-2">
+            <TextArea
+              label="Keywords / SEO (Optional)" 
+              value={formData.keywords || ''}
+              onChange={(e) => handleInputChange('keywords', e.target.value)}
+              placeholder="Enter keywords to include (one per line)..."
+            />
+            <p className="text-xs text-slate-500 mt-1">These keywords will be included with natural density in the copy.</p>
+          </div>
+
+          <TextArea 
+            label="Raw Game Description / Fact Sheet"
+            value={formData.rawDescription || ''}
+            onChange={(e) => handleInputChange('rawDescription', e.target.value)}
+            placeholder="Paste game mechanics, patch notes, or rough ideas here. The AI will extract facts from this text."
+            className="h-48 font-mono text-sm" // Increased height
+          />
+
+           <TextInput 
+            label="Competitor References (Vibe)" 
+            value={formData.competitorReferences || ''} 
+            onChange={(e) => handleInputChange('competitorReferences', e.target.value)} 
+            placeholder="e.g. Stardew Valley meets Dark Souls"
+          />
+
+          <div className="pt-2">
+            <label className="text-sm font-semibold text-gray-300 flex items-center gap-2 mb-2">
+              <StarIcon /> Key Selling Points (USPs)
+            </label>
+            <div className="space-y-3">
+              {formData.usps.map((usp, idx) => (
+                <div key={idx} className="flex gap-2">
+                  <input
+                    className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm text-white focus:ring-1 focus:ring-gaming-500 outline-none"
+                    value={usp}
+                    onChange={(e) => handleUspChange(idx, e.target.value)}
+                    placeholder={`Feature #${idx + 1}`}
+                  />
                   <button 
-                    onClick={() => handleProviderChange(AiProvider.GEMINI)}
-                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors border ${
-                      selectedProvider === AiProvider.GEMINI 
-                      ? 'bg-blue-600/20 border-blue-500 text-blue-200' 
-                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
-                    }`}
+                    onClick={() => removeUsp(idx)}
+                    className="text-slate-500 hover:text-red-400 p-2"
+                    disabled={formData.usps.length === 1}
                   >
-                    Google Gemini
-                  </button>
-                  <button 
-                     onClick={() => handleProviderChange(AiProvider.OPENAI)}
-                     className={`px-3 py-1.5 rounded-lg text-sm transition-colors border ${
-                      selectedProvider === AiProvider.OPENAI 
-                      ? 'bg-green-600/20 border-green-500 text-green-200' 
-                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
-                    }`}
-                  >
-                    OpenAI (ChatGPT)
+                    &times;
                   </button>
                 </div>
-              </div>
-
+              ))}
               <button 
-                onClick={handleGenerate}
-                disabled={isGenerating}
-                className={`w-full flex items-center justify-center gap-2 py-4 rounded-xl text-lg font-bold shadow-lg transition-all transform active:scale-95 ${
-                  isGenerating 
-                  ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
-                  : selectedProvider === AiProvider.GEMINI 
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-900/20'
-                    : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white shadow-green-900/20'
-                }`}
+                onClick={addUsp}
+                className="text-xs text-gaming-400 hover:text-gaming-300 font-medium pl-1"
               >
-                {isGenerating ? (
-                  <>
-                    <RefreshCw className="animate-spin" /> Generating...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="text-yellow-300" /> 
-                    Generate with {selectedProvider === AiProvider.GEMINI ? 'Gemini' : 'ChatGPT'}
-                  </>
-                )}
+                + Add another feature
               </button>
             </div>
-
-            {/* Gemini Output */}
-            {error && (
-              <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-xl flex items-start gap-3">
-                <AlertCircle className="shrink-0 mt-1" size={18} />
-                <p className="text-sm">{error}</p>
-              </div>
-            )}
-
-            {aiOutput && (
-               <div className="bg-slate-900 border border-gaming-500/30 rounded-xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="bg-gradient-to-r from-gaming-900/50 to-slate-900 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
-                   <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
-                    <h3 className="text-sm font-semibold text-white">
-                      {selectedProvider === AiProvider.GEMINI ? 'Gemini' : 'ChatGPT'} Output
-                    </h3>
-                  </div>
-                  <button 
-                    onClick={() => copyToClipboard(aiOutput)}
-                    className="text-xs flex items-center gap-1 text-gaming-300 hover:text-white transition-colors"
-                  >
-                    <Copy size={12} /> Copy Result
-                  </button>
-                </div>
-                <div className="p-6 bg-slate-950 min-h-[300px] prose prose-invert prose-p:text-slate-300 prose-headings:text-white max-w-none">
-                  <div className="whitespace-pre-wrap font-sans text-base leading-relaxed">
-                    {aiOutput}
-                  </div>
-                </div>
-              </div>
-            )}
-
           </div>
+        </div>
+
+        {/* SECTION 3: Output & Actions */}
+        <div className="space-y-6">
+          {/* Action Bar */}
+          <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3 w-full md:w-auto">
+              <label className="text-sm font-medium text-slate-400 whitespace-nowrap">AI Provider:</label>
+              <div className="flex gap-2 w-full md:w-auto">
+                <button 
+                  onClick={() => handleProviderChange(AiProvider.GEMINI)}
+                  className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm transition-colors border ${
+                    selectedProvider === AiProvider.GEMINI 
+                    ? 'bg-blue-600/20 border-blue-500 text-blue-200' 
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  Gemini
+                </button>
+                <button 
+                   onClick={() => handleProviderChange(AiProvider.OPENAI)}
+                   className={`flex-1 md:flex-none px-4 py-2 rounded-lg text-sm transition-colors border ${
+                    selectedProvider === AiProvider.OPENAI 
+                    ? 'bg-green-600/20 border-green-500 text-green-200' 
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  ChatGPT
+                </button>
+              </div>
+            </div>
+
+            <button 
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className={`w-full md:w-auto md:min-w-[300px] flex items-center justify-center gap-2 py-3 px-6 rounded-xl text-lg font-bold shadow-lg transition-all transform active:scale-95 ${
+                isGenerating 
+                ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
+                : selectedProvider === AiProvider.GEMINI 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white shadow-blue-900/20'
+                  : 'bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white shadow-green-900/20'
+              }`}
+            >
+              {isGenerating ? (
+                <>
+                  <RefreshCw className="animate-spin" /> Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="text-yellow-300" /> 
+                  Generate Copy
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Prompt Display */}
+          <div className="bg-slate-900 border border-slate-700 rounded-xl overflow-hidden flex flex-col shadow-xl">
+            <div className="bg-slate-800/50 px-4 py-3 border-b border-slate-700 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <Wand2 size={16} className="text-purple-400" />
+                <h3 className="text-sm font-semibold text-white">Generated System Prompt</h3>
+              </div>
+              <button 
+                onClick={() => copyToClipboard(generatedPrompt)}
+                className="text-xs flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded transition-colors border border-slate-600"
+              >
+                <Copy size={12} /> Copy
+              </button>
+            </div>
+            <div className="bg-slate-950 p-5 min-h-[300px] max-h-[800px] overflow-y-auto custom-scrollbar">
+              <pre className="whitespace-pre-wrap font-mono text-sm text-slate-400 leading-relaxed">
+                {generatedPrompt}
+              </pre>
+            </div>
+          </div>
+
+          {/* AI Output */}
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/50 text-red-200 p-4 rounded-xl flex items-start gap-3">
+              <AlertCircle className="shrink-0 mt-1" size={18} />
+              <p className="text-sm">{error}</p>
+            </div>
+          )}
+
+          {aiOutput && (
+             <div className="bg-slate-900 border border-gaming-500/30 rounded-xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <div className="bg-gradient-to-r from-gaming-900/50 to-slate-900 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+                 <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                  <h3 className="text-sm font-semibold text-white">
+                    {selectedProvider === AiProvider.GEMINI ? 'Gemini' : 'ChatGPT'} Output
+                  </h3>
+                </div>
+                <button 
+                  onClick={() => copyToClipboard(aiOutput)}
+                  className="text-xs flex items-center gap-1 text-gaming-300 hover:text-white transition-colors"
+                >
+                  <Copy size={12} /> Copy Result
+                </button>
+              </div>
+              <div className="p-8 bg-slate-950 min-h-[300px] prose prose-invert prose-p:text-slate-300 prose-headings:text-white max-w-none">
+                <div className="whitespace-pre-wrap font-sans text-base leading-relaxed">
+                  {aiOutput}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
     </div>

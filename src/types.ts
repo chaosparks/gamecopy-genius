@@ -1,4 +1,3 @@
-
 export enum Tone {
   EPIC = 'Epic & Cinematic',
   CASUAL = 'Casual & Friendly',
@@ -10,17 +9,17 @@ export enum Tone {
 }
 
 export enum Platform {
+  H5_ONLINE = 'H5 / Online Web Game',
+  APP_STORE = 'App Store / Google Play (ASO Optimized)',
+  CHROME_WEB_STORE = 'Chrome Web Store Extension',
   STEAM_LONG = 'Steam Store Page (Long Description)',
   STEAM_SHORT = 'Steam Store Page (Short Description)',
-  APP_STORE = 'App Store / Google Play (ASO Optimized)',
   INSTAGRAM_AD = 'Instagram/Facebook Ad Copy',
   TIKTOK_SCRIPT = 'TikTok/Shorts Video Script',
   YOUTUBE_DESC = 'YouTube Video Description',
   EMAIL = 'Marketing Email / Newsletter',
   TWEET = 'Twitter/X Announcement',
   DISCORD = 'Discord Community Announcement',
-  H5_ONLINE = 'H5 / Online Web Game',
-  CHROME_WEB_STORE = 'Chrome Web Store Extension',
 }
 
 export enum GameGenre {
