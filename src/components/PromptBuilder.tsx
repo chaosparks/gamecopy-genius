@@ -53,13 +53,19 @@ export const buildPrompt = (state: FormState): string => {
     ? `\n- **Mandatory Keywords (SEO):** Ensure the following keywords appear naturally in the copy with good density, but do not keyword stuff:\n${keywordList.map(k => `  - "${k.trim()}"`).join('\n')}`
     : '';
 
-  // 3. Construct Common Context
+  // 3. Prepare Raw Description Context (The Missing Piece)
+  const rawDescriptionContext = rawDescription ? `
+- **Raw Game Context / Fact Sheet:**
+${rawDescription}
+(IMPORTANT: Extract key factual details, mechanics, and lore from the text above to inform the copy)` : '';
+
+  // 4. Construct Common Context (Used primarily by RTDF)
   const commonContext = `
 - **Product:** ${gameName}
 - **Genre:** ${genre}
 - **Tone Voice:** ${tone}
 ${competitorReferences ? `- **Competitor/Vibe References:** ${competitorReferences}` : ''}
-${rawDescription ? `- **Raw Game Context / Fact Sheet:**\n${rawDescription}\n(IMPORTANT: Extract key factual details, mechanics, and lore from the text above to inform the copy)` : ''}
+${rawDescriptionContext}
 - **Key Selling Points:**
 ${usps.map(u => `  - ${u}`).join('\n')}
 ${keywordInstruction}
@@ -110,6 +116,7 @@ ${usps.map(u => `   - ${u}`).join('\n')}
 ${keywordList.length > 0 ? `\n(Integrate these keywords: ${keywordList.join(', ')})` : ''}
 
 ${competitorReferences ? `(Context: Similar vibe to ${competitorReferences})` : ''}
+${rawDescriptionContext}
 
 **Language:** ${language}
 **Specific Formatting:** ${formatInstruction}
@@ -135,6 +142,7 @@ ${usps.map(u => `   - ${u}`).join('\n')}
 - Tone: ${tone}
 - Language: ${language}
 - Format: ${formatInstruction}
+${rawDescriptionContext}
 `;
       break;
 
@@ -155,6 +163,7 @@ ${usps.map(u => `- ${u}`).join('\n')}
 - Target Audience: ${audienceInstruction}
 - Closing CTA: ${callToAction}
 ${keywordInstruction}
+${rawDescriptionContext}
 - Language: ${language}
 - Format: ${formatInstruction}
 `;
@@ -181,6 +190,7 @@ ${keywordInstruction}
 - Tone: ${tone}
 - Language: ${language}
 - Format: ${formatInstruction}
+${rawDescriptionContext}
 `;
       break;
 
@@ -206,6 +216,7 @@ ${keywordInstruction}
 - CTA: ${callToAction}
 - Language: ${language}
 - Format: ${formatInstruction}
+${rawDescriptionContext}
 `;
       break;
 
@@ -231,6 +242,7 @@ ${keywordInstruction}
 - CTA: ${callToAction}
 - Language: ${language}
 - Format: ${formatInstruction}
+${rawDescriptionContext}
 `;
       break;
 
@@ -257,6 +269,7 @@ ${keywordInstruction}
 - CTA: ${callToAction}
 - Language: ${language}
 - Format: ${formatInstruction}
+${rawDescriptionContext}
 `;
       break;
 
@@ -270,6 +283,7 @@ USPs: ${usps.join(', ')}.
 CTA: ${callToAction}.
 Language: ${language}.
 ${keywordInstruction}
+${rawDescriptionContext}
 `;
   }
 
