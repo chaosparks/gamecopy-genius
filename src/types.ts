@@ -33,6 +33,19 @@ export enum GameGenre {
   PLATFORMER = 'Platformer',
   MOBA = 'MOBA',
   HYPERCASUAL = 'Hypercasual',
+  RACING = 'Racing',
+  ACTION = 'Action',
+  ADVENTURE = 'Adventure',
+  ARCADE = 'Arcade',
+  BOARD = 'Board',
+  SPORTS = 'Sports',
+  FIGHTING = 'Fighting',
+  KIDS = 'Kids',
+  CASUAL = 'Casual',
+  ANIMAL = 'Animal',
+  RUNNER = 'Runner',
+  CARD = 'Card',
+  THEMED = 'Themed',
 }
 
 export enum Framework {

@@ -290,7 +290,6 @@ const App: React.FC = () => {
                   value={formData.keywords || ''}
                   onChange={(e) => handleInputChange('keywords', e.target.value)}
                   placeholder="Enter keywords to include (one per line)..."
-                  className="h-24"
                 />
                 <p className="text-xs text-slate-500 mt-1">These keywords will be included with natural density in the copy.</p>
               </div>
