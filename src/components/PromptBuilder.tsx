@@ -1,4 +1,3 @@
-
 import { type FormState, Platform, Framework } from '../types';
 import { PLATFORM_DEFAULT_CTAS } from '../constants';
 
@@ -37,8 +36,8 @@ export const buildPrompt = (state: FormState): string => {
       break;
     case Platform.H5_ONLINE:
       formatInstruction = `IMPORTANT OUTPUT REQUIREMENTS:
-1. **Meta Description**: Strictly between 150 and 160 characters (spaces included). SEO optimized.
-2. **Game Description**: Strictly between 300 and 500 words. Focus on 'Instant Play', 'No Download Required', and accessibility. Use headers and bullet points for readability on web portals.`;
+1. **Meta Description**: Strictly between 150 and 160 characters (spaces included). SEO optimized. **MUST include the game name "${gameName}"**.
+2. **Game Description**: Strictly between 300 and 500 words. Focus on 'Instant Play', 'No Download Required', and accessibility. Use headers and bullet points for readability on web portals. **MUST include the game name "${gameName}" naturally multiple times**.`;
       break;
     case Platform.CHROME_WEB_STORE:
       formatInstruction = "SEO-focused for Chrome Web Store. Start with a strong 1-sentence summary (above the fold). Use bullet points for features. Highlight lightweight performance and browser integration.";
