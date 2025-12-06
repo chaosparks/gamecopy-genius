@@ -16,7 +16,7 @@ import {
   Save,
   Key
 } from 'lucide-react';
-import { type FormState, Tone, Platform, GameGenre, Framework, Language, AiProvider } from './types';
+import { type FormState, Tone, Platform, Framework, Language, AiProvider } from './types';
 import { GENRE_OPTIONS, TONE_OPTIONS, PLATFORM_OPTIONS, FRAMEWORK_OPTIONS, LANGUAGE_OPTIONS, PLATFORM_FRAMEWORK_PRIORITY } from './constants';
 import { TextInput, SelectInput, TextArea } from './components/InputFields';
 import { buildPrompt } from './components/PromptBuilder';

@@ -1,5 +1,5 @@
 
-import { type FormState, Platform, Framework, Language } from '../types';
+import { type FormState, Platform, Framework } from '../types';
 import { PLATFORM_DEFAULT_CTAS } from '../constants';
 
 export const buildPrompt = (state: FormState): string => {
