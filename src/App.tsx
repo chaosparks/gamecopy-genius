@@ -360,7 +360,7 @@ const App: React.FC = () => {
             value={formData.rawDescription || ''}
             onChange={(e) => handleInputChange('rawDescription', e.target.value)}
             placeholder="Paste game mechanics, patch notes, or rough ideas here. The AI will extract facts from this text."
-            className="h-48 font-mono text-sm" // Increased height
+            className="h-72 font-mono text-sm" // Increased height
           />
 
            <TextInput 
