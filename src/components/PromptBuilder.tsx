@@ -1,13 +1,83 @@
-import { type FormState, Platform, Framework } from '../types';
-import { PLATFORM_DEFAULT_CTAS } from '../constants';
 
-export const buildPrompt = (state: FormState): string => {
+import { type FormState, Platform, Framework, GameGenre, AiProvider } from '../types';
+import { PLATFORM_DEFAULT_CTAS, GENRE_MARKET_DATA } from '../constants';
+
+export const buildPrompt = (state: FormState, provider: AiProvider): string => {
   const { gameName, genre, tone, platform, framework, language, usps, competitorReferences, keywords, rawDescription, customPrompt } = state;
+
+  // Filter out empty USPs
+  const validUsps = usps.filter(u => u && u.trim().length > 0);
 
   // Auto-generate CTA based on platform
   const callToAction = PLATFORM_DEFAULT_CTAS[platform] || "Play Now";
 
-  // 1. Define Format Instructions based on Platform
+  // Lookup Market Data based on Genre
+  const marketData = GENRE_MARKET_DATA[genre as GameGenre] || {
+    audienceProfile: "General Gaming Audience",
+    sessionDuration: "Variable"
+  };
+
+  // --- 1. PROVIDER OPTIMIZATION LAYER ---
+  let providerContext = "";
+  switch (provider) {
+    case AiProvider.GEMINI:
+      providerContext = `
+**AI OPTIMIZATION (GEMINI)**:
+- Leverage your high-context window to deeply understand the "Vibe" and "Tone".
+- Be creatively expressive. Use evocative language (but avoid the banned AI buzzwords).
+- Formatting: Use clean, spacious Markdown. 
+`;
+      break;
+    case AiProvider.CLAUDE:
+      providerContext = `
+**AI OPTIMIZATION (CLAUDE)**:
+- I have provided context in structured sections. Please parse them carefully.
+- Claude excels at nuance; ensure the "Tone" (${tone}) is distinctly captured.
+- Structure your response using clear headers and avoid unnecessary preamble.
+`;
+      break;
+    case AiProvider.GROK:
+      providerContext = `
+**AI OPTIMIZATION (xAI GROK)**:
+- Be witty, sharp, and engaging.
+- Avoid the "corporate sterile" tone common in other AIs.
+- Focus on "Real Talk" with the gamer. 
+- Don't be afraid to be slightly edgy if the Tone (${tone}) allows it.
+`;
+      break;
+    case AiProvider.OPENAI:
+    default:
+      providerContext = `
+**AI OPTIMIZATION (GPT-4)**:
+- Strictly adhere to the requested structure and logic.
+- Do not add conversational filler before or after the copy.
+- Focus on high-conversion psychology and precision.
+`;
+      break;
+  }
+
+  // --- 2. MULTI-VARIATION LOGIC (STANDARD) ---
+  // Always request 3 distinct options to give the user choices.
+  const variationInstruction = `
+**TASK**: Generate **3 DISTINCT COPY OPTIONS** for this request.
+Do not output just one version. I need to choose the best one.
+
+1. **Option 1 (Direct & Clear)**: Focus on clarity, core features, and trust. 
+2. **Option 2 (Balanced & Engaging)**: A mix of narrative hook and strong selling points.
+3. **Option 3 (Creative & Bold)**: Push the boundaries of the tone "${tone}". High energy.
+
+**Format Output As:**
+--- OPTION 1 ---
+[Content]
+
+--- OPTION 2 ---
+[Content]
+
+--- OPTION 3 ---
+[Content]
+`;
+
+  // 3. Define Format Instructions based on Platform
   let formatInstruction = "";
   switch (platform) {
     case Platform.STEAM_LONG:
@@ -35,9 +105,24 @@ export const buildPrompt = (state: FormState): string => {
       formatInstruction = "Subject Line options included. Personal tone. Body structure: Hook -> Value -> Offer.";
       break;
     case Platform.H5_ONLINE:
-      formatInstruction = `IMPORTANT OUTPUT REQUIREMENTS:
-1. **Meta Description**: Strictly between 150 and 160 characters (spaces included). SEO optimized. **MUST include the game name "${gameName}"**.
-2. **Game Description**: Strictly between 300 and 500 words. Focus on 'Instant Play', 'No Download Required', and accessibility. Use headers and bullet points for readability on web portals. **MUST include the game name "${gameName}" naturally multiple times**.`;
+      formatInstruction = `IMPORTANT OUTPUT REQUIREMENTS (Modeled after Poki / GamePix styles):
+
+1. **Meta Description**: 
+   - STRICTLY between 150 and 160 characters. 
+   - SEO optimized but highly readable.
+   - Example style: "Play ${gameName} for free online! Master the art of ${genre} in this addictive browser game. No downloads required."
+   - **MUST include the game name "${gameName}"**.
+
+2. **Game Description**:
+   - **Length**: 300-500 words.
+   - **Tone**: Casual, enthusiastic, and direct. Write like a gamer recommending a game to a friend. Avoid "marketing speak".
+   - **Structure**:
+     - **Intro Hook**: 2-3 sentences. What is the game? Why is it fun? (e.g., "${gameName} is an addictive ${genre} game where you...")
+     - **Gameplay & Mechanics**: How do you play? What are the goals?
+     - **Key Features**: Bullet points of what makes it cool.
+     - **How to Play / Controls**: A specific section explaining controls (e.g., "Controls: Use WASD to move...").
+   - **Keywords**: Naturally integrate "play for free", "online browser game", "no download", "play on mobile".
+   - **MUST include the game name "${gameName}" naturally multiple times**.`;
       break;
     case Platform.CHROME_WEB_STORE:
       formatInstruction = "SEO-focused for Chrome Web Store. Start with a strong 1-sentence summary (above the fold). Use bullet points for features. Highlight lightweight performance and browser integration.";
@@ -46,39 +131,55 @@ export const buildPrompt = (state: FormState): string => {
       formatInstruction = "Standard marketing copy structure.";
   }
 
-  // 2. Prepare Keyword Instruction
+  // 4. Prepare Keyword Instruction
   const keywordList = keywords ? keywords.split('\n').filter(k => k.trim() !== '') : [];
   const keywordInstruction = keywordList.length > 0
     ? `\n- **Mandatory Keywords (SEO):** Ensure the following keywords appear naturally in the copy with good density, but do not keyword stuff:\n${keywordList.map(k => `  - "${k.trim()}"`).join('\n')}`
     : '';
 
-  // 3. Prepare Raw Description Context (The Missing Piece)
+  // 5. Prepare Raw Description Context
   const rawDescriptionContext = rawDescription ? `
 - **Raw Game Context / Fact Sheet:**
 ${rawDescription}
-(IMPORTANT: Extract key factual details, mechanics, and lore from the text above to inform the copy)` : '';
 
-  // 4. Construct Common Context (Used primarily by RTDF)
+**INSTRUCTION FOR RAW CONTEXT:**
+Analyze the text above and prioritize extracting the following facts to use in the copy:
+1. **Core game mechanics** (How the game actually plays)
+2. **Key features** (Top 3-5 standout elements)
+3. **Player benefits** (Why the player will love it)
+4. **Unique selling points** (What makes it different from competitors)
+5. **Current tone/style** (Identify and adapt the vibe)
+6. **Keywords** (Retain significant terms found in the text)
+` : '';
+
+  // 6. Construct Common Context
+  // Conditionally render USP section only if valid USPs exist
+  const uspSection = validUsps.length > 0 
+    ? `- **Key Selling Points:**\n${validUsps.map(u => `  - ${u}`).join('\n')}`
+    : '';
+
   const commonContext = `
 - **Product:** ${gameName}
 - **Genre:** ${genre}
 - **Tone Voice:** ${tone}
 ${competitorReferences ? `- **Competitor/Vibe References:** ${competitorReferences}` : ''}
 ${rawDescriptionContext}
-- **Key Selling Points:**
-${usps.map(u => `  - ${u}`).join('\n')}
+${uspSection}
 ${keywordInstruction}
 - **Call to Action:** ${callToAction}
 - **Output Language:** ${language} (Write the entire copy in this language, except for untranslatable technical terms)
+
+**Market Intelligence Data (Auto-Inferred):**
+- **Target Audience:** ${marketData.audienceProfile} (Infer further details from Platform: ${platform})
+- **Typical Session Length:** ${marketData.sessionDuration}
   `;
 
-  const audienceInstruction = `(IMPORTANT: You must infer and define the ideal target audience based on the Genre: "${genre}", Tone: "${tone}", and Platform: "${platform}")`;
+  const audienceInstruction = `(Use Auto-Inferred Market Intelligence: "${marketData.audienceProfile}" adapted for ${platform})`;
 
   let frameworkPrompt = "";
 
   switch (framework) {
     case Framework.RTDF:
-      // Based on the CoppyGPT "Role-Task-Details-Format" formula
       frameworkPrompt = `
 *** FORMULA: RTDF (Role, Task, Details, Format) ***
 
@@ -86,11 +187,10 @@ ${keywordInstruction}
 You are an expert Video Game Copywriter and Marketing Strategist with a focus on high-conversion text.
 
 **TASK**
-Write a ${platform} for the game "${gameName}".
+${variationInstruction}
 
 **DETAILS**
 ${commonContext}
-- **Target Audience:** ${audienceInstruction}
 
 **FORMAT**
 ${formatInstruction}
@@ -98,11 +198,11 @@ ${formatInstruction}
       break;
 
     case Framework.INGREDIENTS_7:
-      // Based on the "7 Essential Ingredients" formula
       frameworkPrompt = `
 *** FORMULA: The 7 Essential Ingredients ***
 
-Please write a piece of copy containing the following 7 ingredients:
+Please write copy containing the following 7 ingredients.
+${variationInstruction}
 
 1. **Length/Format:** Appropriate for ${platform}.
 2. **Type:** ${platform}
@@ -111,7 +211,7 @@ Please write a piece of copy containing the following 7 ingredients:
 5. **Tone of Voice:** ${tone}
 6. **Call to Action:** ${callToAction}
 7. **Key Points (Must Include):**
-${usps.map(u => `   - ${u}`).join('\n')}
+${validUsps.length > 0 ? validUsps.map(u => `   - ${u}`).join('\n') : '(Extract relevant features from Raw Context)'}
 ${keywordList.length > 0 ? `\n(Integrate these keywords: ${keywordList.join(', ')})` : ''}
 
 ${competitorReferences ? `(Context: Similar vibe to ${competitorReferences})` : ''}
@@ -123,44 +223,40 @@ ${rawDescriptionContext}
       break;
 
     case Framework.QUEST:
-      // Qualify, Understand, Educate, Stimulate, Transition
       frameworkPrompt = `
 *** FORMULA: QUEST (Qualify, Understand, Educate, Stimulate, Transition) ***
 
-Write a ${platform} for "${gameName}" using the QUEST framework. This is ideal for guiding the player through a journey.
+${variationInstruction}
+Use the QUEST framework to guide the player through a journey.
 
-1. **QUALIFY:** "Is this you?" - Call out the specific audience ${audienceInstruction} and filter them in.
-2. **UNDERSTAND:** "We get it." - Show empathy for their desire for a specific gaming experience (e.g., specific genre tropes or lack thereof).
-3. **EDUCATE:** "Here is the solution." - Introduce ${gameName} and how it solves their need.
-4. **STIMULATE:** "Why it's awesome." - List the benefits using the USPs:
-${usps.map(u => `   - ${u}`).join('\n')}
-   ${keywordList.length > 0 ? `(Weave in keywords: ${keywordList.join(', ')})` : ''}
+1. **QUALIFY:** "Is this you?" - Call out the specific audience ${audienceInstruction}.
+2. **UNDERSTAND:** "We get it." - Show empathy.
+3. **EDUCATE:** "Here is the solution." - Introduce ${gameName}.
+4. **STIMULATE:** "Why it's awesome." - List benefits/Key Selling Points.
 5. **TRANSITION:** "What next?" - Drive them to the ${callToAction}.
 
 **Context:**
 - Tone: ${tone}
 - Language: ${language}
 - Format: ${formatInstruction}
-${rawDescriptionContext}
+${commonContext}
 `;
       break;
 
     case Framework.FAB:
-      // Features, Advantages, Benefits
       frameworkPrompt = `
 *** FORMULA: FAB (Features, Advantages, Benefits) ***
 
-Write a ${platform} for "${gameName}" strictly using the FAB framework. 
-For EACH Key Selling Point below, you must write a bullet point that follows this structure:
+${variationInstruction}
+Strictly use the FAB framework. For EACH Key Selling Point, write:
 "Feature (The Mechanic) -> Advantage (What it does) -> Benefit (Why the player loves it)"
 
-**Key Selling Points to Convert:**
-${usps.map(u => `- ${u}`).join('\n')}
+${validUsps.length > 0 ? `**Key Selling Points:**\n${validUsps.map(u => `- ${u}`).join('\n')}` : '(Instruction: Extract features from the Raw Context/Description to apply FAB formula)'}
 
 **Context:**
 - Tone: ${tone}
-- Target Audience: ${audienceInstruction}
-- Closing CTA: ${callToAction}
+- Audience: ${audienceInstruction}
+- CTA: ${callToAction}
 ${keywordInstruction}
 ${rawDescriptionContext}
 - Language: ${language}
@@ -169,45 +265,36 @@ ${rawDescriptionContext}
       break;
 
     case Framework.AIDA:
-      // Attention, Interest, Desire, Action
       frameworkPrompt = `
 *** FORMULA: AIDA ***
 
-Write a ${platform} for "${gameName}" using the AIDA framework. Structure the output clearly (though you don't need to label the sections in the final copy, strictly follow the flow):
+${variationInstruction}
+Structure the output strictly following the AIDA flow:
 
-1. **ATTENTION:** Create a powerful hook related to ${genre} that stops the scroll or grabs attention immediately.
-2. **INTEREST:** Elaborate on the setting or core premise. Use the specific details: ${competitorReferences || 'unique game world'}.
-3. **DESIRE:** Convert features into emotional benefits. Use these USPs:
-${usps.map(u => `   - ${u}`).join('\n')}
+1. **ATTENTION:** Powerful hook related to ${genre}.
+2. **INTEREST:** Elaborate on setting/premise.
+3. **DESIRE:** Convert features into emotional benefits.
 4. **ACTION:** ${callToAction}
-
-**SEO Note:**
-${keywordInstruction}
 
 **Context:**
 - Audience: ${audienceInstruction}
 - Tone: ${tone}
 - Language: ${language}
 - Format: ${formatInstruction}
-${rawDescriptionContext}
+${commonContext}
 `;
       break;
 
     case Framework.PAS:
-      // Problem, Agitation, Solution
       frameworkPrompt = `
 *** FORMULA: PAS (Problem, Agitation, Solution) ***
 
-Write a ${platform} for "${gameName}" using the PAS framework. This is excellent for ${genre} players who are tired of generic games.
+${variationInstruction}
+Use the PAS framework:
 
-1. **PROBLEM:** Identify a common frustration or boredom point for players of ${genre} (e.g., pay-to-win, repetitive grinding, lack of story).
-2. **AGITATION:** Agitate that pain point. Make them feel why the current market options aren't good enough.
-3. **SOLUTION:** Introduce "${gameName}" as the perfect solution.
-   - Highlight these USPs as the cure:
-${usps.map(u => `     - ${u}`).join('\n')}
-
-**SEO Note:**
-${keywordInstruction}
+1. **PROBLEM:** Identify a common frustration for ${genre} players.
+2. **AGITATION:** Agitate that pain point.
+3. **SOLUTION:** Introduce "${gameName}" as the perfect solution using the Key Selling Points.
 
 **Context:**
 - Audience: ${audienceInstruction}
@@ -215,25 +302,20 @@ ${keywordInstruction}
 - CTA: ${callToAction}
 - Language: ${language}
 - Format: ${formatInstruction}
-${rawDescriptionContext}
+${commonContext}
 `;
       break;
 
     case Framework.BAB:
-      // Before, After, Bridge
       frameworkPrompt = `
 *** FORMULA: BAB (Before, After, Bridge) ***
 
-Write a ${platform} for "${gameName}" using the BAB framework.
+${variationInstruction}
+Use the BAB framework:
 
-1. **BEFORE:** Describe the player's current world (boredom, looking for the next big adventure, playing generic ${genre} games).
-2. **AFTER:** Describe an ideal state where they are immersed, challenged, or having intense fun.
-3. **BRIDGE:** Show how "${gameName}" gets them from Before to After.
-   - Use these features as the bridge:
-${usps.map(u => `     - ${u}`).join('\n')}
-
-**SEO Note:**
-${keywordInstruction}
+1. **BEFORE:** Describe the player's current world (boredom, generic games).
+2. **AFTER:** Describe an ideal state of fun/immersion.
+3. **BRIDGE:** Show how "${gameName}" gets them there.
 
 **Context:**
 - Audience: ${audienceInstruction}
@@ -241,26 +323,20 @@ ${keywordInstruction}
 - CTA: ${callToAction}
 - Language: ${language}
 - Format: ${formatInstruction}
-${rawDescriptionContext}
+${commonContext}
 `;
       break;
 
     case Framework.STORY_HERO:
-      // Hero's Journey / Narrative Focus
       frameworkPrompt = `
 *** FORMULA: Story-Driven (Hero's Journey) ***
 
-Write a narrative-focused ${platform} for "${gameName}". Focus less on technical features and more on the *experience*.
+${variationInstruction}
+Focus on the *experience* and narrative:
 
-1. **The Call to Adventure:** Set the scene of the game world.
-2. **The Challenge:** What stands in the player's way? (The antagonist or environment).
-3. **The Transformation:** How will the player grow? (Leveling, building, conquering).
-
-Weave these technical USPs into the story naturally:
-${usps.map(u => `- ${u}`).join('\n')}
-
-**SEO Note:**
-${keywordInstruction}
+1. **The Call to Adventure:** Set the scene.
+2. **The Challenge:** What stands in the way?
+3. **The Transformation:** How will the player grow?
 
 **Context:**
 - Audience: ${audienceInstruction}
@@ -268,17 +344,17 @@ ${keywordInstruction}
 - CTA: ${callToAction}
 - Language: ${language}
 - Format: ${formatInstruction}
-${rawDescriptionContext}
+${commonContext}
 `;
       break;
 
     default:
       frameworkPrompt = `
 *** FORMULA: General Marketing Copy ***
-Write a ${platform} for ${gameName}.
+${variationInstruction}
 Tone: ${tone}.
 Audience: ${audienceInstruction}.
-USPs: ${usps.join(', ')}.
+USPs: ${validUsps.length > 0 ? validUsps.join(', ') : 'Refer to Context'}.
 CTA: ${callToAction}.
 Language: ${language}.
 ${keywordInstruction}
@@ -291,6 +367,8 @@ ${rawDescriptionContext}
     : "";
 
   return `
+${providerContext}
+
 ${frameworkPrompt}
 
 ${customInstruction}

@@ -1,16 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_INSTRUCTION } from "../constants";
 
-export const generateMarketingCopy = async (prompt: string, apiKey?: string): Promise<string> => {
+export const generateMarketingCopy = async (prompt: string): Promise<string> => {
   try {
-    // Priority: Function argument -> Environment Variable
-    const key = apiKey || process.env.API_KEY;
-    
-    if (!key) {
-      throw new Error("API Key is missing. Please configure it in Settings or set the API_KEY environment variable.");
-    }
-
-    const ai = new GoogleGenAI({ apiKey: key });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',

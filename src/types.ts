@@ -1,4 +1,5 @@
 
+
 export const Tone = {
   EPIC: 'Epic & Cinematic',
   CASUAL: 'Casual & Friendly',
@@ -74,12 +75,31 @@ export const Language = {
 
 export type Language = (typeof Language)[keyof typeof Language];
 
+export const OutputFormat = {
+  MARKDOWN: 'Markdown',
+  PLAIN_TEXT: 'Plain Text',
+  HTML: 'HTML',
+  JSON: 'JSON',
+} as const;
+
+export type OutputFormat = (typeof OutputFormat)[keyof typeof OutputFormat];
+
 export const AiProvider = {
   GEMINI: 'Google Gemini',
   OPENAI: 'OpenAI (ChatGPT)',
+  CLAUDE: 'Anthropic (Claude)',
+  GROK: 'xAI (Grok)',
 } as const;
 
 export type AiProvider = (typeof AiProvider)[keyof typeof AiProvider];
+
+export interface GenreProfile {
+  defaultTone: Tone;
+  defaultFramework: Framework; 
+  audienceProfile: string;
+  sessionDuration: string;
+  defaultUsps: string[];
+}
 
 export interface FormState {
   gameName: string;
@@ -88,12 +108,14 @@ export interface FormState {
   platform: Platform;
   framework: Framework;
   language: Language;
+  outputFormat: OutputFormat;
   usps: string[]; 
   wordCount?: number;
   competitorReferences?: string;
   keywords?: string; 
   rawDescription?: string; 
   customPrompt?: string; 
+  marketInsights?: string;
 }
 
 export interface GeneratedResult {
