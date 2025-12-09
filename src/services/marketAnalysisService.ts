@@ -10,7 +10,7 @@ interface GameFeedItem {
   category: string;
 }
 
-export const analyzeGameMonetizeTrends = async (genre: string): Promise<string> => {
+export const analyzeGameMonetizeTrends = async (): Promise<string> => {
   try {
     // 1. Fetch real market data
     const response = await fetch(FEED_URL);

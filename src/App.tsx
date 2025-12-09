@@ -163,7 +163,7 @@ const App: React.FC = () => {
     // Uses Gemini environment variable internally in the service
     setIsAnalyzing(true);
     try {
-      const insights = await analyzeGameMonetizeTrends(formData.genre);
+      const insights = await analyzeGameMonetizeTrends();
       handleInputChange('marketInsights', insights);
     } catch (e: any) {
       alert("Analysis failed: " + e.message);
